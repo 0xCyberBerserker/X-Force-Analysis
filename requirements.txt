@@ -1,4 +1,4 @@
 selenium
 pygments
-dotenv
-PIL
+python-dotenv
+pillow
