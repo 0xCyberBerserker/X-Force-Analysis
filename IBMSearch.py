@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from genericpath import exists
 import os
 from telnetlib import IP
 import os.path
@@ -12,7 +13,7 @@ from PIL import Image
 from selenium import webdriver
 
 import time
-
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from pygments import highlight, lexers, formatters
@@ -50,11 +51,11 @@ required.add_argument(
     action="store")
 """
 args = parser.parse_args()
-
+pathScreenshots='./Screenshots'
 
 
 def imgShow(DATA):
-    img="X-Force_"+DATA+'.png'
+    img=pathScreenshots+"/X-Force_"+DATA+'.png'
     if(platform.system() == "Windows"):
         os.system('start '+img)
     else:
@@ -68,6 +69,11 @@ def listScan(DATA):
     count = 0
     options = webdriver.ChromeOptions()
     options.headless = True
+    options.add_argument("--headless")
+    WINDOW_SIZE = "1920,1080"
+    options.add_argument("--window-size=%s" % WINDOW_SIZE)
+    options.add_experimental_option("detach", True)
+    
     if(platform.system() == "Windows"):
         #Windows
         driver = webdriver.Chrome("./chromedrivers/chromedriver.exe")
@@ -76,21 +82,43 @@ def listScan(DATA):
         driver = webdriver.Chrome("./chromedrivers/chromedriver")
     
     
+    
     for line in Lines:
-        count +=1
-        URL = "https://exchange.xforce.ibmcloud.com/ip/"+line
-        #options.add_experimental_option("detach", True)
+        
+        URL = "https://exchange.xforce.ibmcloud.com/ip/"+line    
         #Open a New Window
-        driver.execute_script("window.open('');")
         # Switch to the new window
-        driver.switch_to.window(driver.window_handles[count])
+        driver.switch_to.new_window('tab')
+        
         #Load URL
         driver.get(URL)
+        count +=1
+        driver.switch_to.window(driver.window_handles[count])
+        
+        ## Trying some DOM manipulation
+        time.sleep(1)
+        
+        
+        for i in range(2):
+            try:
+                driver.find_element_by_id('termsCheckbox').click()
+                driver.find_element_by_class_name('guestlogin').click()
+                driver.find_element_by_css_selector('.featurehint__footer>.btn').click()
+                #driver.find_element_by_xpath("/html/body/div/div/div[4]/div[2]/p/a").click()
+                break
+            except NoSuchElementException as e:
+                print('Retrying')
+                #time.sleep(1)
+        #else:
+        #    raise e
+        
     time.sleep(1)
-    driver.execute_script("alert('Analisis finalizado :D');")
+    driver.switch_to.window(driver.window_handles[0])
+    driver.close()
+    print('Finished Opening Tabs. It`s time to analyze :D')
     while True:
         time.sleep(1)
-
+        
         
         
         
@@ -108,12 +136,22 @@ def takeScreenshot(DATA):
         #Linux
         driver = webdriver.Chrome("./chromedrivers/chromedriver")
     driver.get(URL)
+    time.sleep(1)
+    driver.find_element_by_id('termsCheckbox').click()
+    driver.find_element_by_class_name('guestlogin').click()
+    driver.find_element_by_css_selector('.featurehint__footer>.btn').click()
     S = lambda X: driver.execute_script('return document.body.parentNode.scroll'+X)
     driver.set_window_size(S('Width'),S('Height'), driver.window_handles[0]) # May need manual adjustment
     driver.set_window_size(1366,1800, driver.window_handles[0]) # Manual Adjusted, like a phone
     driver.set_window_size(1366,1800) # Manual Adjusted
     time.sleep(2)
-    driver.find_element_by_tag_name('body').screenshot('X-Force_'+DATA+'.png')
+    
+    
+    isExist =os.path.exists(pathScreenshots)
+    if not isExist:
+        os.makedirs(pathScreenshots)
+
+    driver.find_element_by_tag_name('body').screenshot(''+pathScreenshots+'/X-Force_'+DATA+'.png')
     driver.quit()
 
 def main():
@@ -126,7 +164,7 @@ def main():
         
     else:
         exit(
-            "Error: one of the following arguments are required: -i/--ip, more work in progress")
+            "Error: one of the following arguments are required: -i/--ip, -l/--list more work in progress")
 
 
 if __name__ == '__main__':
