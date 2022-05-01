@@ -54,7 +54,7 @@ args = parser.parse_args()
 
 
 def imgShow(DATA):
-    img="Virustotal_"+DATA+'.png'
+    img="X-Force_"+DATA+'.png'
     if(platform.system() == "Windows"):
         os.system('start '+img)
     else:
