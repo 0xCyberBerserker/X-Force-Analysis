@@ -1,0 +1,4 @@
+selenium
+pygments
+dotenv
+PIL
