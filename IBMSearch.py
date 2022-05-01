@@ -27,7 +27,7 @@ required = parser.add_mutually_exclusive_group()
 required.add_argument(
     "-i",
     "--ip",
-    help="lookup a single IP address",
+    help="lookup a single IP address and make a screenshot",
     action="store")
 
 required.add_argument(
@@ -52,14 +52,14 @@ required.add_argument(
 args = parser.parse_args()
 
 
-"""
+
 def imgShow(DATA):
     img="Virustotal_"+DATA+'.png'
     if(platform.system() == "Windows"):
         os.system('start '+img)
     else:
         os.system("shotwell "+img)
-"""
+
 
 
 def listScan(DATA):
@@ -119,7 +119,7 @@ def takeScreenshot(DATA):
 def main():
     if args.ip:
         takeScreenshot(args.ip)
-        #imgShow(args.hash)
+        imgShow(args.ip)
     
     if args.list:
         listScan(args.list)
