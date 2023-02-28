@@ -59,7 +59,7 @@ def imgShow(DATA):
     if(platform.system() == "Windows"):
         os.system('start '+img)
     else:
-        os.system("shotwell "+img)
+        os.system("kitty +kitten icat "+img)
 
 
 
