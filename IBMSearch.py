@@ -9,6 +9,7 @@ import urllib.request as urlRequest
 import urllib.parse as urlParse
 import platform
 
+
 from PIL import Image
 from selenium import webdriver
 
@@ -18,6 +19,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from pygments import highlight, lexers, formatters
 from dotenv import load_dotenv
+from selenium.webdriver.common.by import By
 
 parser = argparse.ArgumentParser(
     description='This program utilizes Exchange from IBM to perform queries about IP addresses and Hashes and makes a ScreenShot.'
@@ -59,7 +61,7 @@ def imgShow(DATA):
     if(platform.system() == "Windows"):
         os.system('start '+img)
     else:
-        os.system("kitty +kitten icat "+img)
+        os.system("shotwell "+img)
 
 
 
@@ -101,9 +103,9 @@ def listScan(DATA):
         
         for i in range(2):
             try:
-                driver.find_element_by_id('termsCheckbox').click()
-                driver.find_element_by_class_name('guestlogin').click()
-                driver.find_element_by_css_selector('.featurehint__footer>.btn').click()
+                driver.find_element(By.ID, 'termsCheckbox').click()
+                driver.find_element(By.CLASS, 'guestlogin').click()
+                driver.find_element(By.CSS_SELECTOR, '.featurehint__footer>.btn').click()
                 #driver.find_element_by_xpath("/html/body/div/div/div[4]/div[2]/p/a").click()
                 break
             except NoSuchElementException as e:
@@ -137,9 +139,9 @@ def takeScreenshot(DATA):
         driver = webdriver.Chrome("./chromedrivers/chromedriver")
     driver.get(URL)
     time.sleep(1)
-    driver.find_element_by_id('termsCheckbox').click()
-    driver.find_element_by_class_name('guestlogin').click()
-    driver.find_element_by_css_selector('.featurehint__footer>.btn').click()
+    driver.find_element(By.ID, 'termsCheckbox').click()
+    driver.find_element(By.CLASS_NAME, 'guestlogin').click()
+    driver.find_element(By.CSS_SELECTOR, '.featurehint__footer>.btn').click()
     S = lambda X: driver.execute_script('return document.body.parentNode.scroll'+X)
     driver.set_window_size(S('Width'),S('Height'), driver.window_handles[0]) # May need manual adjustment
     driver.set_window_size(1366,1800, driver.window_handles[0]) # Manual Adjusted, like a phone
@@ -151,7 +153,7 @@ def takeScreenshot(DATA):
     if not isExist:
         os.makedirs(pathScreenshots)
 
-    driver.find_element_by_tag_name('body').screenshot(''+pathScreenshots+'/X-Force_'+DATA+'.png')
+    driver.find_element(By.TAG_NAME, 'body').screenshot(''+pathScreenshots+'/X-Force_'+DATA+'.png')
     driver.quit()
 
 def main():
