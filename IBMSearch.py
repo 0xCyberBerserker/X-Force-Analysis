@@ -104,7 +104,7 @@ def listScan(DATA):
         for i in range(2):
             try:
                 driver.find_element(By.ID, 'termsCheckbox').click()
-                driver.find_element(By.CLASS, 'guestlogin').click()
+                driver.find_element(By.CLASS_NAME, 'guestlogin').click()
                 driver.find_element(By.CSS_SELECTOR, '.featurehint__footer>.btn').click()
                 #driver.find_element_by_xpath("/html/body/div/div/div[4]/div[2]/p/a").click()
                 break
